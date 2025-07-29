@@ -1,0 +1,83 @@
+version: '3.9'
+
+services:
+  partstracker.database:
+    image: postgres:latest
+    container_name: PartsTracker.Database
+    environment:
+      - POSTGRES_DB=partstracker
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - ../.containers/db:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+
+  partstracker.identity:
+    image: quay.io/keycloak/keycloak:latest
+    container_name: PartsTracker.Identity
+    command: start-dev --import-realm
+    environment:
+      - KC_HEALTH_ENABLED=true
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
+    volumes:
+      - ../.containers/identity:/opt/keycloak/data
+      - ../.files:/opt/keycloak/data/import
+    ports:
+      - 18080:8080
+
+  partstracker.seq:
+    image: datalust/seq:latest
+    container_name: PartsTracker.Seq
+    environment:
+      - ACCEPT_EULA=Y
+    ports:
+      - 5341:5341
+      - 8081:80
+
+  partstracker.redis:
+    image: redis:latest
+    container_name: PartsTracker.Redis
+    restart: always
+    ports:
+      - 6379:6379
+
+  partstracker.jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: PartsTracker.Jaeger
+    ports:
+      - 4317:4317
+      - 4318:4318
+      - 16686:16686
+
+  partstracker.api:
+    image: ${DOCKER_REGISTRY-}partstrackerapi
+    container_name: PartsTracker.Api
+    build:
+      context: .
+      dockerfile: ../src/server/Api/PartsTracker.Api/Dockerfile
+    ports:
+      - 5000:8080
+      - 5001:8081
+
+  partstracker.web:
+    image: ${DOCKER_REGISTRY-}partstrackerweb
+    container_name: PartsTracker.Web
+    build:
+      context: ../src/web/partstracker.web
+      dockerfile: Dockerfile
+      target: development
+    ports:
+      - 3000:8080
+    # volumes:
+      # - ../src/web/partstracker.web:/app
+      # - ../src/web/partstracker.web/node_modules:/app/node_modules
+    environment:
+      - NODE_ENV=development
+      # - Identity__Authority=http://PartsTracker.Identity:18080/realms/partstracker
+      # - Identity__ClientId=partstracker-web
+      # - Identity__ResponseType=code
+      # - Identity__Scope=openid profile email
+    stdin_open: true
+    tty: true

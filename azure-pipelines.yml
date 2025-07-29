@@ -1,0 +1,35 @@
+trigger:
+  branches:
+    include:
+      - main
+
+pr:
+  branches:
+    include:
+      - main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+  - checkout: self
+
+  - task: UseDotNet@2
+    inputs:
+      packageType: 'sdk'
+      version: '8.0.x'
+
+  - script: dotnet restore src/server/Api/PartsTracker.Api/PartsTracker.Api.csproj
+    displayName: 'Restore PartsTracker.Api dependencies'
+
+  - script: dotnet restore src/server/Web/PartsTracker.Web/PartsTracker.Web.csproj
+    displayName: 'Restore PartsTracker.Web dependencies'
+
+  - script: dotnet test --no-build --verbosity normal
+    displayName: 'Run all tests'
+
+  - script: docker build -t partstracker-api:latest src/server/Api/PartsTracker.Api
+    displayName: 'Build PartsTracker.Api Docker image'
+
+  - script: docker build -t partstracker-web:latest src/server/Web/PartsTracker.Web
+    displayName: 'Build PartsTracker.Web Docker image'

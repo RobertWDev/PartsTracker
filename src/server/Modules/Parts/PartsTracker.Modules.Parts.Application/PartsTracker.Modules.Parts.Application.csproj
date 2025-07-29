@@ -1,0 +1,7 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <ItemGroup>
+        <ProjectReference Include="..\..\..\Shared\PartsTracker.Shared.Application\PartsTracker.Shared.Application.csproj" />
+        <ProjectReference Include="..\PartsTracker.Modules.Parts.Domain\PartsTracker.Modules.Parts.Domain.csproj" />
+        <ProjectReference Include="..\PartsTracker.Modules.Parts.IntegrationEvents\PartsTracker.Modules.Parts.IntegrationEvents.csproj" />
+    </ItemGroup>
+</Project>

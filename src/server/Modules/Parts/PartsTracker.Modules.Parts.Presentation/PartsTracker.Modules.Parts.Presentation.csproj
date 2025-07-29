@@ -1,0 +1,12 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\..\Shared\PartsTracker.Shared.Infrastructure\PartsTracker.Shared.Infrastructure.csproj" />
+        <ProjectReference Include="..\..\..\Shared\PartsTracker.Shared.Presentation\PartsTracker.Shared.Presentation.csproj" />
+        <ProjectReference Include="..\PartsTracker.Modules.Parts.Application\PartsTracker.Modules.Parts.Application.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+        <InternalsVisibleTo Include="PartsTracker.Modules.Parts.IntegrationTests" />
+    </ItemGroup>
+
+</Project>
